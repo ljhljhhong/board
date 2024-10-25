@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Page</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- 필요에 따라 CSS 경로 수정 -->
+</head>
+<body>
+<div class="container">
+    <h1>회원 정보 수정</h1>
+
+    <!-- 로그인된 사용자 정보를 표시 -->
+    <div class="member-info">
+        <p><strong>현재 로그인된 이메일:</strong> <span th:text="${member.email}"></span></p>
+    </div>
+
+    <!-- 이름 수정 폼 -->
+    <form action="/mypage/update" method="post">
+        <label for="name">이름 수정:</label>
+        <input type="text" id="name" name="name" th:value="${member.name}" required>
+
+        <button type="submit">수정하기</button>
+    </form>
+
+    <!-- 비밀번호 변경 폼 -->
+    <form action="/mypage/updatePassword" method="post">
+        <label for="password">비밀번호 수정:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">비밀번호 수정</button>
+    </form>
+
+    <!-- 로그아웃 버튼 -->
+    <form action="/logout" method="post">
+        <button type="submit">로그아웃</button>
+    </form>
+</div>
+</body>
+</html>

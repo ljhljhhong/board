@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>게시판 수정</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+<div class="container">
+    <h1>게시판 수정</h1>
+    <form action="/modify" method="post" enctype="multipart/form-data">
+        <div class="mb-3 col-6">
+            <label for="writer" class="form-label">작성자</label>
+            <input type="text" class="form-control" id="writer" name="writer" placeholder="작성자" readonly>
+        </div>
+        <div class="mb-3 col-6">
+            <label for="title" class="form-label">타이틀</label>
+            <input type="text" class="form-control" id="title" name="title" placeholder="타이틀">
+        </div>
+        <div class="mb-3 col-6">
+            <label for="content" class="form-label">작성내용</label>
+            <textarea class="form-control" id="content" name="content" rows="3"></textarea>
+        </div>
+
+        <!-- 파일 업로드 부분 추가 -->
+        <div class="mb-3 col-6">
+            <label for="file" class="form-label">첨부파일</label>
+            <input type="file" class="form-control" id="file" name="file" onchange="setThumbnail(event)">
+            <input type="hidden" id="url" name="url" value="${dto.url}">
+        </div>
+
+        <!-- 이미지 또는 비디오 미리보기 영역 -->
+        <div id="image_container">
+            <!-- 기존 파일이 있을 경우 표시 -->
+            <img src="${dto.url}" alt="첨부파일" id="preview" style="max-width: 100%; height: auto;">
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">수정</button>
+        <button type="button" class="btn btn-secondary mt-3">취소</button>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function sendFile(file) {
+        var form_data = new FormData();
+        form_data.append('file', file);
+        $.ajax({
+            data: form_data,
+            type: "POST",
+            url: '/upload',
+            cache: false,
+            contentType: false,
+            enctype: 'multipart/form-data',
+            processData: false,
+            success: function (url) {
+                $('#url').val(url); // 파일 업로드 후 서버에서 받은 URL을 숨겨진 필드에 설정
+            }
+        });
+    }
+
+    function setThumbnail(e) {
+        var files = e.target.files;
+        var filesArr = Array.prototype.slice.call(files);
+
+        filesArr.forEach(function(f) {
+            var reader = new FileReader();
+            reader.onload = function(event) {
+                var img = document.createElement("img");
+                img.setAttribute("src", event.target.result);
+                img.style.maxWidth = "100%";
+                img.style.height = "auto";
+
+                $("#image_container").empty(); // 기존 이미지를 지우고 새 이미지 표시
+                $("#image_container").append(img);
+
+                sendFile(f); // 파일을 서버로 전송
+            };
+            reader.readAsDataURL(f);
+        });
+    }
+</script>
+</body>
+</html>
